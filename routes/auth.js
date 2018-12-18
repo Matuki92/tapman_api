@@ -4,6 +4,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const router = express.Router();
 
+// db to use
 const User = require('../models/user');
 
 router.get('/me', (req, res, next) => {
