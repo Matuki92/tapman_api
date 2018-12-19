@@ -8,13 +8,27 @@ const Venue = require('../models/venue');
 const Beer = require('../models/beer');
 
 // get list of current venue's active beers only
-router.get(':venue/active', (req, res, next) => {
-
+router.get('/active', (req, res, next) => {
+  Beer.find({ active: true })
+    .then(result => {
+      const data = {
+        beers: result
+      };
+      res.json(data);
+    })
+    .catch(next);
 });
 
 // get full list of current venue's beers
-router.get(':venue/all', (req, res, next) => {
-
+router.get('/all', (req, res, next) => {
+  Beer.find({})
+    .then(result => {
+      const data = {
+        beers: result
+      };
+      res.json(data);
+    })
+    .catch(next);
 });
 
 // add a new beer to current venue
@@ -30,14 +44,9 @@ router.post('/new', (req, res, next) => {
     brewery: req.body.brewery,
     country: req.body.country,
     price: req.body.price,
-    color: req.body.color
+    color: req.body.color,
+    active: req.body.active
   });
-
-  for (let item in newBeer) {
-    if (!item) {
-      return res.status(422).json({ code: 'validation' });
-    }
-  }
 
   newBeer.save()
     .then(beer => {
