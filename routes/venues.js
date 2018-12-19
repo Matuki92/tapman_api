@@ -18,7 +18,25 @@ router.get('/me', (req, res, next) => {
 
 // get venues that belong to session userId
 router.get('/own', (req, res, next) => {
+  if (!req.session.currentUser) {
+    return res.status(401).json({ code: 'unauthorized' });
+  }
 
+  const userId = req.session.currentUser._id;
+
+  User.findOne({ _id: userId })
+    .populate({
+      path: 'venues',
+      model: 'Venue'
+    })
+    .then(user => {
+      const data = {
+        venues: user.venues
+      };
+
+      res.json(data);
+    })
+    .catch(next);
 });
 
 // create new venue and add to current user's venues
