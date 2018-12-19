@@ -62,7 +62,7 @@ router.post('/new', (req, res, next) => {
       const salt = bcrypt.genSaltSync(11);
       const hashPass = bcrypt.hashSync(adminpwd, salt);
 
-      const newVenue = Venue({
+      const newVenue = new Venue({
         dns,
         name,
         adminpwd: hashPass
