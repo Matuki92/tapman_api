@@ -7,12 +7,24 @@ const router = express.Router();
 const Venue = require('../models/venue');
 const Beer = require('../models/beer');
 
+// TAPMAN MAIN CLIENT //
 // get list of current venue's active beers only
-router.get('/active', (req, res, next) => {
-  Beer.find({ active: true })
+router.get('/active/:dns', (req, res, next) => {
+  Venue.findOne({ dns: req.params.dns })
+    .populate({
+      path: 'beers',
+      model: 'Beer'
+    })
     .then(result => {
+      if (!result) {
+        res.status(404).json({ code: 'not-found' });
+      }
+      const activeBeers = result.beers.filter(beer => {
+        return beer.active;
+      });
+
       const data = {
-        beers: result
+        beers: activeBeers
       };
       res.json(data);
     })
@@ -23,6 +35,9 @@ router.get('/active', (req, res, next) => {
 router.get('/all', (req, res, next) => {
   Beer.find({})
     .then(result => {
+      if (!result) {
+        res.status(404).json({ code: 'not-found' });
+      }
       const data = {
         beers: result
       };
@@ -41,6 +56,7 @@ router.post('/new', (req, res, next) => {
     name: req.body.name,
     style: req.body.style,
     abv: req.body.abv,
+    ibu: req.body.ibu,
     brewery: req.body.brewery,
     country: req.body.country,
     price: req.body.price,
@@ -68,7 +84,27 @@ router.post('/new', (req, res, next) => {
 
 // modify venue's current beer
 router.put('/edit', (req, res, next) => {
+  if (!req.session.currentVenue) {
+    return res.status(401).json({ code: 'unauthorized' });
+  }
 
+  const modifiedBeer = {
+    name: req.body.name,
+    style: req.body.style,
+    abv: req.body.abv,
+    ibu: req.body.ibu,
+    brewery: req.body.brewery,
+    country: req.body.country,
+    price: req.body.price,
+    color: req.body.color,
+    active: req.body.active
+  };
+
+  Beer.findOneAndUpdate({ _id: req.body._id }, modifiedBeer, { new: true })
+    .then(beer => {
+      res.json(beer);
+    })
+    .catch(next);
 });
 
 module.exports = router;

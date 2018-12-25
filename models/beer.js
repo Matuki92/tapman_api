@@ -8,10 +8,14 @@ const beerSchema = new Schema({
   name: String,
   style: String,
   abv: Number,
+  ibu: Number,
   brewery: String,
   country: String,
   price: Number,
-  color: String,
+  color: {
+    type: String,
+    enum: ['#e7c61d', '#b95c1d', '#950000', '#251912']
+  },
   active: Boolean
 });
 

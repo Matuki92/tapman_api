@@ -8,14 +8,7 @@ const router = express.Router();
 const Venue = require('../models/venue');
 const User = require('../models/user');
 
-router.get('/me', (req, res, next) => {
-  if (req.session.currentVenue) {
-    res.json(req.session.currentVenue);
-  } else {
-    res.status(404).json({ code: 'not-found' });
-  }
-});
-
+// TAPMAN MAIN CLIENT //
 // get venues that belong to session userId
 router.get('/own', (req, res, next) => {
   if (!req.session.currentUser) {
@@ -87,6 +80,20 @@ router.post('/new', (req, res, next) => {
     .catch(next);
 });
 
+// modify user's selected venue
+router.put('/edit', (req, res, next) => {
+
+});
+
+// TAPMAN VENUE CLIENT //
+router.get('/me', (req, res, next) => {
+  if (req.session.currentVenue) {
+    res.json(req.session.currentVenue);
+  } else {
+    res.status(404).json({ code: 'not-found' });
+  }
+});
+
 // check if entered password match with current venue's adminpwd
 router.post('/login', (req, res, next) => {
   if (req.session.currentVenue) {
@@ -115,8 +122,25 @@ router.post('/login', (req, res, next) => {
     .catch(next);
 });
 
-// modify user's selected venue
-router.put('/edit', (req, res, next) => {
-
+router.post('/logout', (req, res) => {
+  if (req.body.dns === req.session.currentVenue.dns) {
+    req.session.currentVenue = null;
+    return res.status(204).send();
+  } else {
+    return res.status(404).json({ code: 'not-found' });
+  }
 });
+
+// check if dns exists to let client load the venue
+router.get('/:dns', (req, res, next) => {
+  Venue.findOne({ dns: req.params.dns })
+    .then(venue => {
+      if (!venue) {
+        return res.status(404).json({ code: 'not-found' });
+      }
+      res.json(venue);
+    })
+    .catch(next);
+});
+
 module.exports = router;
