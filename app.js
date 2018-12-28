@@ -15,7 +15,7 @@ const venues = require('./routes/venues');
 const beers = require('./routes/beers');
 
 // db connect
-mongoose.connect('mongodb://localhost/tapman', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/tapman', {
   keepAlive: true,
   reconnectTries: Number.MAX_VALUE
 });
@@ -23,8 +23,8 @@ mongoose.connect('mongodb://localhost/tapman', {
 // cors
 app.use(cors({
   credentials: true,
-  // origin: [process.env.CLIENT_URL]
-  origin: ['http://127.0.0.1:4200']
+  origin: [process.env.CLIENT_URL]
+  // origin: ['http://127.0.0.1:4200']
 }));
 
 // session
