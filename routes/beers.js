@@ -9,7 +9,7 @@ const Beer = require('../models/beer');
 
 // TAPMAN MAIN CLIENT //
 // get list of current venue's active beers only
-router.get('/active/:dns', (req, res, next) => {
+router.get('/:dns/active', (req, res, next) => {
   Venue.findOne({ dns: req.params.dns })
     .populate({
       path: 'beers',
@@ -32,14 +32,19 @@ router.get('/active/:dns', (req, res, next) => {
 });
 
 // get full list of current venue's beers
-router.get('/all', (req, res, next) => {
-  Beer.find({})
+router.get('/:dns/all', (req, res, next) => {
+  Venue.findOne({ dns: req.params.dns })
+    .populate({
+      path: 'beers',
+      model: 'Beer'
+    })
     .then(result => {
       if (!result) {
         res.status(404).json({ code: 'not-found' });
       }
+
       const data = {
-        beers: result
+        beers: result.beers
       };
       res.json(data);
     })
