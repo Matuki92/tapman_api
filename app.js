@@ -1,5 +1,4 @@
 'use strict';
-
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -10,25 +9,31 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
 // declare routes
-const auth = require('./routes/auth');
+// const auth = require('./routes/auth');
 const venues = require('./routes/venues');
 const beers = require('./routes/beers');
 
 // db connect
-mongoose.connect('mongodb://tapman:tapman1@ds026658.mlab.com:26658/tapmantest' || process.env.MONGODB_URI, {
+mongoose.connect('mongodb://tapman:tapman1@ds026658.mlab.com:26658/tapmantest', {
+  useNewUrlParser: true,
   keepAlive: true,
   reconnectTries: Number.MAX_VALUE
 });
 
-// cors
+// CORS
+// headers must include credentials and origin matching "tapman.beer" in order to allow access.
 app.use(cors({
   credentials: true,
-  origin: [process.env.CLIENT_URL, 'http://127.0.0.1:4200']
-  // origin: ['http://127.0.0.1:4200']
+  origin: (origin, cb) => {
+    if (origin.includes('tapman.beer') || origin.includes('localhost')) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
+  }
 }));
 
 // session
-
 app.use(session({
   store: new MongoStore({
     mongooseConnection: mongoose.connection,
@@ -49,7 +54,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 // use routes
-app.use('/auth', auth);
+// app.use('/auth', auth);
 app.use('/venues', venues);
 app.use('/beers', beers);
 

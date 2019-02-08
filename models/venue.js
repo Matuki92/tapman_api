@@ -11,7 +11,12 @@ const venueSchema = new Schema({
     type: [ObjectId],
     ref: 'Beer'
   },
-  adminpwd: String
+  adminpwd: String,
+  settings: {
+    maxBeers: Number,
+    logoUrl: String,
+    logoHeight: Number
+  }
 });
 
 const Venue = mongoose.model('Venue', venueSchema);

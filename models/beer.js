@@ -14,7 +14,7 @@ const beerSchema = new Schema({
   price: Number,
   color: {
     type: String,
-    enum: ['#e7c61d', '#b95c1d', '#950000', '#251912']
+    enum: ['#e7c61d', '#b95c1d', '#950000', '#67371A', '#251912']
   },
   active: Boolean
 });
