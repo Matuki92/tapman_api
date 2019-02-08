@@ -25,7 +25,9 @@ mongoose.connect('mongodb://tapman:tapman1@ds026658.mlab.com:26658/tapmantest', 
 app.use(cors({
   credentials: true,
   origin: (origin, cb) => {
-    if (origin.includes('tapman.beer') || origin.includes('localhost')) {
+    if (!origin) {
+      console.error('no headers received');
+    } else if (origin.includes('tapman.beer') || origin.includes('localhost')) {
       cb(null, true);
     } else {
       cb(null, false);

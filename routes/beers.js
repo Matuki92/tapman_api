@@ -10,7 +10,7 @@ const Beer = require('../models/beer');
 
 // gets client out of hostname
 const getClientDns = hostname => {
-  return hostname === 'localhost' ? 'tapmantest' : hostname.substr(0, hostname.indexOf('.'));
+  return hostname === 'localhost' ? 'dev' : hostname.substr(0, hostname.indexOf('.'));
 };
 
 // SOCKET CONNECTION AND EVENTS

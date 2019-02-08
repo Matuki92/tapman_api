@@ -9,7 +9,7 @@ const Venue = require('../models/venue');
 
 // get client dns out of hostname
 const getClientDns = hostname => {
-  return hostname === 'localhost' ? 'tapmantest' : hostname.substr(0, hostname.indexOf('.'));
+  return hostname === 'localhost' ? 'dev' : hostname.substr(0, hostname.indexOf('.'));
 };
 
 // TAPMAN VENUE CLIENT
