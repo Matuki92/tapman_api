@@ -23,6 +23,7 @@ const updateContent = (hostname, io) => {
   if (!foundClients) {
     return;
   }
+  console.log(foundClients);
   foundClients.forEach(client => {
     io.sockets.connected[client.socketId].emit('Update-Venue');
   });
@@ -52,7 +53,6 @@ const checkInputValidity = input => {
 
 // get a venue's beer search result
 router.get('/:dns/:value', (req, res, next) => {
-  console.log(req.hostname);
   Venue.findOne({ dns: req.params.dns })
     .populate({
       path: 'beers',
