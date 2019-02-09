@@ -7,6 +7,35 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+const io = require('socket.io')();
+
+// SOCKET IO
+io.connectedClients = [];
+app.io = io;
+
+// first connection and storing client data
+io.on('connection', socket => {
+  const client = socket.handshake.headers.host.split(':').shift();
+  const connectedClientDNS = client === 'localhost' ? 'dev' : client;
+
+  const data = {
+    socketId: socket.id,
+    clientDNS: connectedClientDNS
+  };
+
+  io.connectedClients.push(data);
+
+  console.log('Socket client connected /', connectedClientDNS);
+  console.log(`${io.connectedClients.length} clients connected`);
+  socket.emit('connected');
+
+  socket.on('disconnect', () => {
+    console.log(`client "${connectedClientDNS}" disconnected`);
+    io.connectedClients.splice(io.connectedClients.indexOf(socket.id, 1));
+  });
+});
+
+app.set('io', io);
 
 // declare routes
 // const auth = require('./routes/auth');

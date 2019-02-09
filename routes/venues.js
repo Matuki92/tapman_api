@@ -16,6 +16,7 @@ const getClientDns = hostname => {
 
 // check if dns exists to let client load with venue settings
 router.get('/:dns', (req, res, next) => {
+  const io = req.app.get('io');
   if (getClientDns(req.hostname) !== req.params.dns) {
     return res.status(401).json({ code: 'unauthorized' });
   }

@@ -2,7 +2,6 @@
 // imports ------------------------------------------
 const express = require('express');
 const router = express.Router();
-const io = require('socket.io')(3001);
 // dbs to use
 const Venue = require('../models/venue');
 const Beer = require('../models/beer');
@@ -16,13 +15,10 @@ const getClientDns = hostname => {
 // SOCKET CONNECTION AND EVENTS
 // ----------------------------
 
-// list of connected clients
-let clients = [];
-
 // this function is called when a change is made in a venue's settings or beers
 // it looks for all the clients matching the updated venue and sends the update
-const updateContent = (hostname) => {
-  const foundClients = clients.filter(client => client.clientDNS === hostname);
+const updateContent = (hostname, io) => {
+  const foundClients = io.connectedClients.filter(client => client.clientDNS === hostname);
 
   if (!foundClients) {
     return;
@@ -31,28 +27,6 @@ const updateContent = (hostname) => {
     io.sockets.connected[client.socketId].emit('Update-Venue');
   });
 };
-
-// first connection and storing client data
-io.on('connection', socket => {
-  const client = socket.handshake.headers.host.split(':').shift();
-  const connectedClientDNS = client === 'localhost' ? 'tapmantest' : client;
-
-  const data = {
-    socketId: socket.id,
-    clientDNS: connectedClientDNS
-  };
-
-  clients.push(data);
-
-  console.log('Socket client connected /', client);
-  console.log(`${clients.length} clients connected`);
-  socket.emit('connected');
-
-  socket.on('disconnect', () => {
-    console.log(`client "${connectedClientDNS}" disconnected`);
-    clients.splice(clients.indexOf(socket.id, 1));
-  });
-});
 
 // check a received beer's properties before storing them to the db
 // this is the same code that runs on every input after submitting the data in the app's form
@@ -139,7 +113,8 @@ router.post('/new', (req, res, next) => {
         .then(() => {
           res.status(204).send();
           if (newBeer.active) {
-            updateContent(hostname);
+            const io = req.app.get('io');
+            updateContent(hostname, io);
           }
         });
     })
@@ -178,7 +153,8 @@ router.put('/edit', (req, res, next) => {
     .then(() => {
       res.status(204).send();
       if (modifiedBeer.active) {
-        updateContent(hostname);
+        const io = req.app.get('io');
+        updateContent(hostname, io);
       }
     })
     .catch(next);
@@ -201,7 +177,8 @@ router.delete('/delete', (req, res, next) => {
     .then(() => {
       res.status(204).send();
       if (isBeerActive) {
-        updateContent(hostname);
+        const io = req.app.get('io');
+        updateContent(hostname, io);
       }
     })
     .catch(next);
