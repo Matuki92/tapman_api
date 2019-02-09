@@ -9,6 +9,11 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const io = require('socket.io')();
 
+// gets client out of hostname
+const getClientDns = hostname => {
+  return hostname === 'localhost' ? 'dev' : hostname.substr(0, hostname.indexOf('.'));
+};
+
 // SOCKET IO
 io.connectedClients = [];
 app.io = io;
@@ -16,7 +21,7 @@ app.io = io;
 // first connection and storing client data
 io.on('connection', socket => {
   const client = socket.handshake.headers.host.split(':').shift();
-  const connectedClientDNS = client === 'localhost' ? 'dev' : client;
+  const connectedClientDNS = client === 'localhost' ? 'dev' : getClientDns(client);
 
   const data = {
     socketId: socket.id,
