@@ -23,9 +23,9 @@ const updateContent = (hostname, io) => {
   if (!foundClients) {
     return;
   }
-  console.log(foundClients);
   foundClients.forEach(client => {
-    io.sockets.connected[client.socketId].emit('Update-Venue');
+    console.log('emitting to', client.socketId);
+    io.sockets.sockets[client.socketId].emit('Update-Venue');
   });
 };
 

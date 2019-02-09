@@ -30,7 +30,7 @@ io.on('connection', socket => {
 
   io.connectedClients.push(data);
 
-  console.log('Socket client connected /', connectedClientDNS);
+  console.log(`Socket client connected on "${connectedClientDNS}", socket ID: "${socket.id}"'`);
   console.log(`${io.connectedClients.length} clients connected`);
   socket.emit('connected');
 
