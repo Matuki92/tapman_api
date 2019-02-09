@@ -52,6 +52,7 @@ const checkInputValidity = input => {
 
 // get a venue's beer search result
 router.get('/:dns/:value', (req, res, next) => {
+  console.log(req.hostname);
   Venue.findOne({ dns: req.params.dns })
     .populate({
       path: 'beers',
