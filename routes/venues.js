@@ -16,7 +16,6 @@ const getClientDns = hostname => {
 
 // check if dns exists to let client load with venue settings
 router.get('/:dns', (req, res, next) => {
-  const io = req.app.get('io');
   if (getClientDns(req.hostname) !== req.params.dns) {
     return res.status(401).json({ code: 'unauthorized' });
   }
@@ -87,7 +86,7 @@ router.post('/login', (req, res, next) => {
 });
 
 router.post('/logout', (req, res) => {
-  if (req.body.dns === req.session.currentVenue.dns) {
+  if (getClientDns(req.hostname) === req.session.currentVenue.dns) {
     req.session.currentVenue = null;
     return res.status(204).send();
   } else {

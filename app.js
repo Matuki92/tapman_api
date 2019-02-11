@@ -7,6 +7,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+const helmet = require('helmet');
 const io = require('socket.io')();
 
 // gets client out of hostname
@@ -54,6 +55,9 @@ mongoose.connect('mongodb://tapman:tapman1@ds026658.mlab.com:26658/tapmantest', 
   reconnectTries: Number.MAX_VALUE
 });
 
+// helmet
+app.use(helmet());
+
 // CORS
 // headers must include credentials and origin matching "tapman.beer" in order to allow access.
 app.use(cors({
@@ -75,10 +79,13 @@ app.use(session({
     mongooseConnection: mongoose.connection,
     ttl: 24 * 60 * 60 // 1 day
   }),
-  secret: 'some-string',
+  secret: 'secuR3',
+  name: 'sessionID',
   resave: true,
   saveUninitialized: true,
   cookie: {
+    // secure: true, ONLY WITH HTTPS
+    httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000
   }
 }));
